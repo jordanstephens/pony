@@ -12,12 +12,17 @@ TEST_DIRS := ./test
 SRCS := $(shell find $(SRC_DIRS) -name *.c)
 OBJS := $(SRCS:.c=.o)
 
-default: lib
+default: all
+
+all: check lib test
 
 lib: $(BUILD_DIR)/libpony(${OBJS})
 
 $(BUILD_DIR)/libpony.${SHARED_LIBRARY_EXTENSION}: ${OBJS}
 	${CC} ${SHARED_LIBRARY_FLAG} -o $@ $^
+
+check:
+	cppcheck --suppress='*:include/*' --force ${SRCS} ${TEST_SRCS}
 
 TEST_SRCS := $(shell find $(TEST_DIRS) -name *.c)
 TEST_OBJS := $(TEST_SRCS:.c=.o)
@@ -36,4 +41,4 @@ help:
 	-@echo "make test:  run unit tests"
 	-@echo "make clean: remove all build files"
 
-.PHONY: help test clean
+.PHONY: help test clean all
