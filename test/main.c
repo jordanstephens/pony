@@ -7,6 +7,26 @@
 
 int tests_run = 0;
 
+static char * test_open_close() {
+  char* dirname = "./tmp/test_open";
+  pony_db db = pony_open(dirname);
+  mu_assert(
+    "db.path is not the same as dirname",
+    strcmp(db.path, dirname) == 0
+  );
+  mu_assert(
+    "db.path is not a copy of dirname",
+    db.path != dirname
+  );
+  pony_close(&db);
+  return 0;
+}
+
+static char * all_tests() {
+  mu_run_test(test_open_close);
+  return 0;
+}
+
 int main() {
   char *result = all_tests();
   printf("\n");
