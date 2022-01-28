@@ -22,8 +22,56 @@ static char * test_open_close() {
   return 0;
 }
 
+static char * test_put_get() {
+  char* dirname = "./tmp/test_put_get";
+  pony_db db = pony_open(dirname);
+  const char* key = "foo";
+  const char* value = "bar";
+  pony_put(&db, key, value);
+  const char* returned_value = pony_get(&db, key);
+  mu_assert(
+    "get value is not the same as put value",
+    strcmp(value, returned_value) == 0
+  );
+  pony_close(&db);
+  return 0;
+}
+
+static char * test_get_missing() {
+  char* dirname = "./tmp/test_get_missing";
+  pony_db db = pony_open(dirname);
+  const char* key = "foo";
+  const char* returned_value = pony_get(&db, key);
+  mu_assert(
+    "value for non-inserted key is not NULL",
+    returned_value == NULL
+  );
+  pony_close(&db);
+  return 0;
+}
+
+static char * test_put_rm_get() {
+  char* dirname = "./tmp/test_put_rm_get";
+  pony_db db = pony_open(dirname);
+  const char* key = "foo";
+  const char* value = "bar";
+  pony_put(&db, key, value);
+  pony_rm(&db, key);
+  const char* returned_value = pony_get(&db, key);
+  mu_assert(
+    "value for removed key is not NULL",
+    returned_value == NULL
+  );
+  pony_close(&db);
+  return 0;
+}
+
 static char * all_tests() {
   mu_run_test(test_open_close);
+  mu_run_test(test_put_get);
+  mu_run_test(test_get_missing);
+  mu_run_test(test_put_rm_get);
+  mu_run_test(test_put_rm_get);
   return 0;
 }
 
