@@ -1,0 +1,4 @@
+---
+PointerAlignment: Left
+BasedOnStyle: Chromium
+UseTab: Never

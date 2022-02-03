@@ -33,12 +33,17 @@ test: $(BUILD_DIR)/test
 $(BUILD_DIR)/test: ${TEST_OBJS} ${OBJS}
 	${CC} -o $@ $^
 
+format:
+	clang-format -i src/*.{h,c}
+
 clean:
 	-rm -rf $(BUILD_DIR)/* $(SRC_DIRS)/*.o $(SRC_DIRS)/*.d $(TEST_DIRS)/*.o $(TEST_DIRS)/*.d $(TEST_DIRS)/*.o
 
 help:
-	-@echo "make lib:   build libpony.${SHARED_LIBRARY_EXTENSION}"
-	-@echo "make test:  run unit tests"
-	-@echo "make clean: remove all build files"
+	-@echo "make lib:    build libpony.${SHARED_LIBRARY_EXTENSION}"
+	-@echo "make test:   run unit tests"
+	-@echo "make check:  run cppcheck"
+	-@echo "make format: run clang-format -i"
+	-@echo "make clean:  remove all build files"
 
-.PHONY: help test clean all
+.PHONY: help test clean all format
