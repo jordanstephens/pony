@@ -8,7 +8,7 @@
 int tests_run = 0;
 
 static char * test_open_close() {
-  char* dirname = "./tmp/test_open";
+  const char* dirname = "./tmp/test_open";
   pony_db db = pony_open(dirname);
   mu_assert(
     "db.path is not the same as dirname",
@@ -23,7 +23,7 @@ static char * test_open_close() {
 }
 
 static char * test_put_get() {
-  char* dirname = "./tmp/test_put_get";
+  const char* dirname = "./tmp/test_put_get";
   pony_db db = pony_open(dirname);
   const char* key = "foo";
   const char* value = "bar";
@@ -38,7 +38,7 @@ static char * test_put_get() {
 }
 
 static char * test_get_missing() {
-  char* dirname = "./tmp/test_get_missing";
+  const char* dirname = "./tmp/test_get_missing";
   pony_db db = pony_open(dirname);
   const char* key = "foo";
   const char* returned_value = pony_get(&db, key);
@@ -51,7 +51,7 @@ static char * test_get_missing() {
 }
 
 static char * test_put_rm_get() {
-  char* dirname = "./tmp/test_put_rm_get";
+  const char* dirname = "./tmp/test_put_rm_get";
   pony_db db = pony_open(dirname);
   const char* key = "foo";
   const char* value = "bar";
@@ -66,12 +66,29 @@ static char * test_put_rm_get() {
   return 0;
 }
 
+static char * test_put_close_get() {
+  const char* dirname = "./tmp/test_put_close_get";
+  pony_db db = pony_open(dirname);
+  const char* key = "foo";
+  const char* value = "bar";
+  pony_put(&db, key, value);
+  pony_close(&db);
+  db = pony_open(dirname);
+  const char* returned_value = pony_get(&db, key);
+  mu_assert(
+    "value is not persisted after close",
+    strcmp(value, returned_value) == 0
+  );
+  pony_close(&db);
+  return 0;
+}
+
 static char * all_tests() {
   mu_run_test(test_open_close);
   mu_run_test(test_put_get);
   mu_run_test(test_get_missing);
   mu_run_test(test_put_rm_get);
-  mu_run_test(test_put_rm_get);
+  mu_run_test(test_put_close_get);
   return 0;
 }
 

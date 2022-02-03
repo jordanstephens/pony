@@ -12,7 +12,7 @@ TEST_DIRS := ./test
 SRCS := $(shell find $(SRC_DIRS) -name *.c)
 OBJS := $(SRCS:.c=.o)
 
-default: all
+default: help
 
 all: check lib test
 
@@ -28,7 +28,10 @@ TEST_SRCS := $(shell find $(TEST_DIRS) -name *.c)
 TEST_OBJS := $(TEST_SRCS:.c=.o)
 
 test: $(BUILD_DIR)/test
+	rm -rf tmp/*
 	./build/test
+
+build_test: $(BUILD_DIR)/test
 
 $(BUILD_DIR)/test: ${TEST_OBJS} ${OBJS}
 	${CC} -o $@ $^
