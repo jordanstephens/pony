@@ -46,7 +46,6 @@ int pony_put(pony_db* self, const char* key, const char* value) {
   };
   pony_index_result result =
       pony_index_put(&self->index, cstr_from(key), index_entry);
-  assert(result.inserted);
   pony_record_drop_keys(&record);
   return 0;
 }

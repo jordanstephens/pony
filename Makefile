@@ -39,6 +39,16 @@ test: build_test
 format:
 	clang-format -i src/*.{h,c}
 
+BENCH_SRCS := $(shell find ./bench -name *.c)
+BENCH_OBJS := $(BENCH_SRCS:.c=.o)
+
+bench: $(BUILD_DIR)/bench
+	rm -rf tmp/bench
+	./build/bench
+
+$(BUILD_DIR)/bench: ${BENCH_OBJS} ${OBJS}
+	${CC} -o $@ $^
+
 clean:
 	-rm -rf $(BUILD_DIR)/* $(SRC_DIRS)/*.o $(SRC_DIRS)/*.d $(TEST_DIRS)/*.o $(TEST_DIRS)/*.d $(TEST_DIRS)/*.o
 
@@ -49,4 +59,4 @@ help:
 	-@echo "make format: run clang-format -i"
 	-@echo "make clean:  remove all build files"
 
-.PHONY: help test clean all format
+.PHONY: help test clean all bench format
