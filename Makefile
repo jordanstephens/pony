@@ -16,7 +16,7 @@ default: help
 
 all: check lib test
 
-lib: $(BUILD_DIR)/libpony(${OBJS})
+lib: $(BUILD_DIR)/libpony.${SHARED_LIBRARY_EXTENSION}(${OBJS})
 
 $(BUILD_DIR)/libpony.${SHARED_LIBRARY_EXTENSION}: ${OBJS}
 	${CC} ${SHARED_LIBRARY_FLAG} -o $@ $^
@@ -27,14 +27,14 @@ check:
 TEST_SRCS := $(shell find $(TEST_DIRS) -name *.c)
 TEST_OBJS := $(TEST_SRCS:.c=.o)
 
-test: $(BUILD_DIR)/test
+$(BUILD_DIR)/test: ${TEST_OBJS}
+	${CC} -Lbuild -lpony -o $@ $^
+
+build_test: lib $(BUILD_DIR)/test
+
+test: build_test
 	rm -rf tmp/*
 	./build/test
-
-build_test: $(BUILD_DIR)/test
-
-$(BUILD_DIR)/test: ${TEST_OBJS} ${OBJS}
-	${CC} -o $@ $^
 
 format:
 	clang-format -i src/*.{h,c}
