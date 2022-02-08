@@ -42,20 +42,25 @@ format:
 BENCH_SRCS := $(shell find ./bench -name *.c)
 BENCH_OBJS := $(BENCH_SRCS:.c=.o)
 
-bench: $(BUILD_DIR)/bench
-	rm -rf tmp/bench
-	./build/bench
+build_bench: lib $(BUILD_DIR)/bench
 
-$(BUILD_DIR)/bench: ${BENCH_OBJS} ${OBJS}
-	${CC} -o $@ $^
+bench: build_bench
+	mkdir -p tmp/bench
+	rm -rf tmp/bench/*
+	./build/bench -c 8192 > tmp/bench/timings.tsv
+	./bench/plot.sh
+
+$(BUILD_DIR)/bench: ${BENCH_OBJS}
+	${CC} -Lbuild -lpony -o $@ $^
 
 clean:
-	-rm -rf $(BUILD_DIR)/* $(SRC_DIRS)/*.o $(SRC_DIRS)/*.d $(TEST_DIRS)/*.o $(TEST_DIRS)/*.d $(TEST_DIRS)/*.o
+	-rm -rf $(BUILD_DIR)/* $(SRC_DIRS)/*.o $(SRC_DIRS)/*.d $(TEST_DIRS)/*.o $(TEST_DIRS)/*.d $(TEST_DIRS)/*.o bench/*.o bench/*.d
 
 help:
 	-@echo "make lib:    build libpony.${SHARED_LIBRARY_EXTENSION}"
 	-@echo "make test:   run unit tests"
 	-@echo "make check:  run cppcheck"
+	-@echo "make bench:  run benchmarks"
 	-@echo "make format: run clang-format -i"
 	-@echo "make clean:  remove all build files"
 
