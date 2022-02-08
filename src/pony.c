@@ -35,7 +35,7 @@ int pony_put(pony_db* self, const char* key, const char* value) {
       .key = strndup(key, key_size),
       .value = strndup(value, value_size),
   };
-  pony_cask_entry cask_entry = pony_cask_append(self->writer, &record);
+  pony_cask_entry cask_entry = pony_cask_append(&self->writer, &record);
   if (cask_entry.offset == 0 && cask_entry.size == 0) {
     return -1;
   }

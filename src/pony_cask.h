@@ -27,7 +27,7 @@ typedef struct {
 
 pony_cask pony_cask_writer_open(const char* directory_path);
 pony_cask pony_cask_reader_open(const char* directory_path);
-pony_cask_entry pony_cask_append(pony_cask writer, pony_record* record);
+pony_cask_entry pony_cask_append(pony_cask* writer, pony_record* record);
 ssize_t pony_cask_read_record(pony_record* record,
                               pony_cask* reader,
                               size_t offset,

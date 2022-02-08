@@ -83,9 +83,9 @@ pony_cask pony_cask_reader_open(const char* directory_path) {
   return pony_cask_open(directory_path, PONY_CASK_MODE_READ);
 }
 
-pony_cask_entry pony_cask_append(pony_cask writer, pony_record* record) {
-  assert(writer.mode == PONY_CASK_MODE_WRITE);
-  assert(writer.fd > 2);
+pony_cask_entry pony_cask_append(pony_cask* writer, pony_record* record) {
+  assert(writer->mode == PONY_CASK_MODE_WRITE);
+  assert(writer->fd > 2);
 
   size_t size = pony_record_size(record);
   assert(size > 0);
@@ -94,20 +94,20 @@ pony_cask_entry pony_cask_append(pony_cask writer, pony_record* record) {
   size_t bytes_serialized = pony_record_serialize(&buffer, record);
   assert(bytes_serialized == size);
 
-  ssize_t written = write(writer.fd, &buffer.data, size);
+  ssize_t written = write(writer->fd, &buffer.data, size);
   if (-1 == written) {
-    eprintf("Failed to append to cask %zu bytes\n", size);
+    eprintf("Failed to append %zu bytes to cask with fd %d\n", size, writer->fd);
     perror("write");
     return pony_cask_entry_empty();
   }
 
   assert((size_t)written == size);
   pony_cask_entry entry = {
-      .offset = writer.offset,
+      .offset = writer->offset,
       .size = size,
   };
 
-  writer.offset += (size_t)written;
+  writer->offset += (size_t)written;
   return entry;
 }
 
