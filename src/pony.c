@@ -44,8 +44,7 @@ int pony_put(pony_db* self, const char* key, const char* value) {
       .offset = cask_entry.offset,
       .size = cask_entry.size,
   };
-  pony_index_result result =
-      pony_index_put(&self->index, cstr_from(key), index_entry);
+  pony_index_put(&self->index, cstr_from(key), index_entry);
   pony_record_drop_keys(&record);
   return 0;
 }
