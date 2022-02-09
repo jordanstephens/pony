@@ -17,5 +17,5 @@ typedef struct {
 pony_db pony_open(const char* path);
 int pony_put(pony_db* self, const char* key, const char* value);
 const char* pony_get(pony_db* self, const char* key);
-size_t pony_rm(pony_db* self, const char* key);
+int pony_rm(pony_db* self, const char* key);
 void pony_close(pony_db* self);

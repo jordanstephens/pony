@@ -17,6 +17,7 @@ typedef struct {
 
 pony_buffer pony_buffer_new();
 pony_buffer_cursor pony_buffer_cursor_new(pony_buffer* buffer, size_t pos);
+uint8_t* pony_buffer_cursor_ptr(pony_buffer_cursor* self);
 
 void pony_buffer_write_u16(pony_buffer_cursor* cursor, uint16_t* value);
 void pony_buffer_write_u32(pony_buffer_cursor* cursor, uint32_t* value);

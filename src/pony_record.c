@@ -22,6 +22,19 @@ pony_record* pony_record_new(uint16_t key_size,
   return record;
 }
 
+pony_record pony_record_tombstone(uint16_t key_size, const char* key) {
+  return (pony_record){
+      .key_size = key_size,
+      .value_size = 0,
+      .key = key,
+      .value = NULL,
+  };
+}
+
+bool pony_record_is_tombstone(pony_record* record) {
+  return record->value_size == 0;
+}
+
 void pony_record_drop(const pony_record* record) {
   pony_record_drop_keys(record);
   free((pony_record*)record);

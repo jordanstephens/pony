@@ -207,7 +207,9 @@ size_t pony_record_serialize(pony_buffer* buffer, const pony_record* record) {
   pony_buffer_write_str(&cursor, record->key, record->key_size);
   pony_buffer_write_str(&cursor, record->value, record->value_size);
 
-  uint32_t crc = pony_crc32(buffer->data, PONY_RECORD_HEADER_SIZE + body_size);
+  const size_t record_size = PONY_RECORD_HEADER_SIZE + body_size;
+  uint8_t* buffer_ptr = pony_buffer_cursor_ptr(&cursor);
+  uint32_t crc = pony_crc32(buffer_ptr - record_size, record_size);
   pony_buffer_write_u32(&cursor, &crc);
 
   return cursor.pos;
@@ -221,7 +223,6 @@ size_t pony_record_deserialize(pony_record* record,
     return 0;
   }
 
-  uint8_t header_size = sizeof(record->key_size) + sizeof(record->value_size);
   record->key_size = pony_buffer_read_u16(&cursor);
   record->value_size = pony_buffer_read_u16(&cursor);
   size_t body_size = record->key_size + record->value_size;
@@ -232,11 +233,13 @@ size_t pony_record_deserialize(pony_record* record,
   record->key = pony_buffer_read_str(&cursor, record->key_size);
   record->value = pony_buffer_read_str(&cursor, record->value_size);
 
-  uint32_t crc = pony_buffer_read_u32(&cursor);
-  uint32_t check_crc = pony_crc32(buffer->data, header_size + body_size);
+  uint8_t* buffer_ptr = pony_buffer_cursor_ptr(&cursor);
+  size_t record_size = PONY_RECORD_HEADER_SIZE + body_size;
+  uint32_t crc = pony_crc32(buffer_ptr - record_size, record_size);
+  uint32_t check_crc = pony_buffer_read_u32(&cursor);
   assert(crc == check_crc);
 
-  return cursor.pos;
+  return cursor.pos - position;
 }
 
 pony_cask_entry pony_cask_entry_empty() {

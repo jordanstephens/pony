@@ -64,9 +64,17 @@ const char* pony_get(pony_db* self, const char* key) {
   return value;
 }
 
-size_t pony_rm(pony_db* self, const char* key) {
+int pony_rm(pony_db* self, const char* key) {
   size_t found = pony_index_erase(&self->index, key);
-  return found;
+  if (0 == found) return 0;
+  uint16_t key_size = strlen(key);
+  pony_record tombstone = pony_record_tombstone(key_size, key);
+  pony_cask_entry cask_entry = pony_cask_append(&self->writer, &tombstone);
+  if (cask_entry.offset == 0 && cask_entry.size == 0) {
+    return -1;
+  }
+
+  return 1;
 }
 
 void pony_close(pony_db* self) {

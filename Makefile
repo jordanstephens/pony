@@ -32,8 +32,10 @@ $(BUILD_DIR)/test: ${TEST_OBJS}
 
 build_test: lib $(BUILD_DIR)/test
 
-test: build_test
+pre_test: build_test
 	rm -rf tmp/*
+
+test: pre_test
 	./build/test
 
 format:

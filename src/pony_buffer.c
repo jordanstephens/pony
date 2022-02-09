@@ -17,6 +17,10 @@ pony_buffer_cursor pony_buffer_cursor_new(pony_buffer* buffer, size_t pos) {
   };
 }
 
+uint8_t* pony_buffer_cursor_ptr(pony_buffer_cursor* self) {
+  return self->buffer->data + self->pos;
+}
+
 void pony_buffer_write_u16(pony_buffer_cursor* cursor, uint16_t* value) {
   size_t size = sizeof(uint16_t);
   memcpy(cursor->buffer->data + cursor->pos, value, size);
