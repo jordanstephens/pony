@@ -30,6 +30,8 @@
 #include <string.h>
 #include <assert.h>
 
+#define UNUSED(x) (void)(x)
+
 #if defined(_MSC_VER)
 #  pragma warning(disable: 4116 4996) // unnamed type definition in parentheses
 #  define STC_FORCE_INLINE static __forceinline
@@ -123,10 +125,12 @@ STC_INLINE uint64_t c_default_hash(const void* key, size_t len) {
     return _c_ROTL(h, 26) ^ h;
 }
 STC_INLINE uint64_t c_hash32(const void* key, size_t len) {
+    UNUSED(len);
     uint32_t x; memcpy(&x, key, 4);
     return x*0xc6a4a7935bd1e99d >> 15;
 }
 STC_INLINE uint64_t c_hash64(const void* key, size_t len) {
+    UNUSED(len);
     uint64_t x; memcpy(&x, key, 8);
     return x*0xc6a4a7935bd1e99d;
 }

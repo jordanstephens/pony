@@ -202,7 +202,7 @@ _cx_memb(_begin)(const _cx_self* self) {
 
 STC_INLINE _cx_iter
 _cx_memb(_end)(const _cx_self* self)
-    { return c_make(_cx_iter){self->table + self->bucket_count}; }
+    { return c_make(_cx_iter){self->table + self->bucket_count, 0}; }
 
 STC_INLINE void
 _cx_memb(_next)(_cx_iter* it)
