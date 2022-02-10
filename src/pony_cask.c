@@ -23,14 +23,15 @@ size_t pony_record_deserialize(pony_record* record,
 
 pony_cask_entry pony_cask_entry_empty();
 
-const char* cask_path(const char* directory_path) {
+const char* cask_path(const char* directory_path, size_t generation) {
   size_t base_length = strlen(directory_path);
   cstr base_path = cstr_from_n(directory_path, base_length);
   cstr* path = &base_path;
   if (directory_path[base_length - 1] != '/') {
     path = cstr_append(path, "/");
   }
-  path = cstr_append(path, "db.cask");
+  cstr basename = cstr_from_fmt("%zu.pony", generation);
+  path = cstr_append_s(path, basename);
   const char* copy = strndup(cstr_str(path), cstr_length(*path));
   cstr_drop(path);
   return copy;
@@ -47,10 +48,10 @@ int access_mode(pony_cask_mode mode) {
   }
 }
 
-pony_cask pony_cask_open(const char* directory_path, pony_cask_mode mode) {
+pony_cask pony_cask_open(const char* directory_path, size_t generation, pony_cask_mode mode) {
   assert(0 == mkdir_p(directory_path));
 
-  const char* path = cask_path(directory_path);
+  const char* path = cask_path(directory_path, generation);
   int fmode = access_mode(mode);
   if (fmode == -1) {
     eprintf("Illegal cask mode: %d\n", mode);
@@ -70,17 +71,18 @@ pony_cask pony_cask_open(const char* directory_path, pony_cask_mode mode) {
       .fd = fd,
       .offset = 0,
       .mode = mode,
+      .generation = generation,
   };
 
   return cask;
 }
 
-pony_cask pony_cask_writer_open(const char* directory_path) {
-  return pony_cask_open(directory_path, PONY_CASK_MODE_WRITE);
+pony_cask pony_cask_writer_open(const char* directory_path, size_t generation) {
+  return pony_cask_open(directory_path, generation, PONY_CASK_MODE_WRITE);
 }
 
-pony_cask pony_cask_reader_open(const char* directory_path) {
-  return pony_cask_open(directory_path, PONY_CASK_MODE_READ);
+pony_cask pony_cask_reader_open(const char* directory_path, size_t generation) {
+  return pony_cask_open(directory_path, generation, PONY_CASK_MODE_READ);
 }
 
 pony_cask_entry pony_cask_append(pony_cask* writer, pony_record* record) {
@@ -111,8 +113,8 @@ pony_cask_entry pony_cask_append(pony_cask* writer, pony_record* record) {
   return entry;
 }
 
-ssize_t pony_cask_read_record(pony_record* record,
-                              pony_cask* reader,
+ssize_t pony_cask_read_record(pony_cask* reader,
+                              pony_record* record,
                               size_t offset,
                               size_t size) {
   assert(reader->mode == PONY_CASK_MODE_READ);
@@ -247,6 +249,11 @@ pony_cask_entry pony_cask_entry_empty() {
       .offset = 0,
       .size = 0,
   };
+}
+
+void pony_cask_close(pony_cask* cask) {
+  close(cask->fd);
+  cask->fd = -1;
 }
 
 int mkdir_p(const char* path) {

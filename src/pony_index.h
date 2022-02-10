@@ -6,6 +6,7 @@
 typedef struct {
   size_t offset;
   size_t size;
+  size_t generation;
 } pony_index_entry;
 
 // TODO: #define i_valdrop to make sure values get freed on close
@@ -18,5 +19,6 @@ typedef struct {
 #include "../include/cmap.h"
 
 #include "pony_cask.h"
+#include "pony_cask_set.h"
 
-void pony_index_load_cask(pony_index* self, pony_cask* cask);
+void pony_index_load_cask(pony_index* self, pony_cask_set* readers);

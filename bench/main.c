@@ -136,7 +136,7 @@ void run(bench_tasks* tasks, options* opts) {
   clock_t t0, t1;
   double dt;
 
-  pony_db db = pony_open("tmp/bench");
+  pony_db db = pony_open("tmp/bench", (pony_options){});
   int fd0 = db.writer.fd;
 
   for (size_t i = 0; i < opts->count; i++) {
